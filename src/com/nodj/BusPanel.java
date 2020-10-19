@@ -4,16 +4,16 @@ import javax.swing.*;
 import java.awt.*;
 
 public class BusPanel extends JPanel {
-    private BusWithGarmoshka busWithGarmoshka;
+    private ITransport transport;
 
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        if (busWithGarmoshka != null)
-            busWithGarmoshka.drawTransport(g);
+        if (transport != null)
+            transport.drawTransport(g);
     }
 
-    public void setBusWithGarmoshka(BusWithGarmoshka busWithGarmoshka) {
-        this.busWithGarmoshka = busWithGarmoshka;
+    public void setTransport(ITransport transport) {
+        this.transport = transport;
     }
 }
