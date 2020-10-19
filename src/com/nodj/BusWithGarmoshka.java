@@ -2,85 +2,54 @@ package com.nodj;
 
 import java.awt.*;
 
-public class BusWithGarmoshka {
-    private int _startPosX;
-    private int _startPosY;
-    private int _pictureWidth;
-    private int _pictureHeight;
-    private final int carWidth = 320;
-    private final int carHeight = 60;
+public class BusWithGarmoshka extends Bus {
 
-    private int maxSpeed;
-    private float weight;
-    private Color mainColor;
     private Color dopColor;
     private boolean backDoors;
     private boolean garmoshka;
-    DrawingDoors drawingDoors = new DrawingDoors();
+    private IDrawingDoors drawingDoors;
 
-    BusWithGarmoshka(int maxSpeed, float weight, Color mainColor, Color dopColor, boolean backDoors, boolean garmoshka) {
-        this.maxSpeed = maxSpeed;
-        this.weight = weight;
-        this.mainColor = mainColor;
+    BusWithGarmoshka(int maxSpeed,
+                     float weight,
+                     Color mainColor,
+                     Color dopColor,
+                     int busWidth,
+                     int busHeight,
+                     boolean backDoors,
+                     boolean garmoshka,
+                     int numDoors,
+                     int numType) {
+        super(maxSpeed, weight, mainColor, busWidth, busHeight);
         this.dopColor = dopColor;
         this.backDoors = backDoors;
         this.garmoshka = garmoshka;
+        this.drawingDoors = setDrawingDoors(numType);
+        drawingDoors.setConfig(numDoors);
     }
 
-    void setPosition(int x, int y, int width, int height) {
-        _startPosX = x;
-        _startPosY = y;
-        _pictureWidth = width;
-        _pictureHeight = height;
-    }
-
-    void moveTransport(Direction direction) {
-        float step = maxSpeed * 100 / weight;
-        switch (direction) {
-            // вправо
-            case Right:
-                if (_startPosX + step < _pictureWidth - carWidth) {
-                    _startPosX += step;
-                }
-                break;
-            //влево
-            case Left:
-                if (_startPosX - step > 0) {
-                    _startPosX -= step;
-                }
-                break;
-            //вверх
-            case Up:
-                if (_startPosY - step > 0) {
-                    _startPosY -= step;
-                }
-                break;
-            //вниз
-            case Down:
-                if (_startPosY + step < _pictureHeight - carHeight) {
-                    _startPosY += step;
-                }
-                break;
+    private IDrawingDoors setDrawingDoors(int numType) {
+        switch (numType) {
+            case 2:
+                return new DrawingOvalDoors();
+            case 3:
+                return new DrawingDoubleOvalDoors();
+            default:
+                return new DrawingStandardDoors();
         }
     }
 
-    void drawTransport(Graphics g) {
-        g.setColor(mainColor); // cusov
-        g.fillRect(_startPosX, _startPosY, 150, 50);
-        g.setColor(dopColor); // Door
-        g.fillRect(_startPosX, _startPosY + 5, 10, 25);
-        g.fillRect(_startPosX, _startPosY + 40, 5, 5);
-        g.setColor(Color.BLACK); // wheels
-        g.fillOval(_startPosX + 5, _startPosY + 40, 20, 20);
-        g.fillOval(_startPosX + 120, _startPosY + 40, 20, 20);
+    public void setNumDoors(int numDoors) {
+        drawingDoors.setConfig(numDoors);
+    }
+
+    @Override
+    public void drawTransport(Graphics g) {
+        super.drawTransport(g);
         if (garmoshka) {
-
-            g.fillRect(_startPosX + 150, _startPosY, 20, 50);
-
             g.setColor(mainColor);
             g.fillRect(_startPosX + 170, _startPosY, 150, 50);
-
             g.setColor(Color.BLACK);
+            g.fillRect(_startPosX + 150, _startPosY, 20, 50);
             g.fillOval(_startPosX + 175, _startPosY + 40, 20, 20);
             g.fillOval(_startPosX + 290, _startPosY + 40, 20, 20);
         }
