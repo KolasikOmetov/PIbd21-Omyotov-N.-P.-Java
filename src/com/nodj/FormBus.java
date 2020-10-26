@@ -6,8 +6,9 @@ import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.io.File;
 
-public class App {
+public class FormBus {
     public JFrame frame;
+    public JFrame parent;
     private final JButton up = new JButton();
     private final JButton down = new JButton();
     private final JButton left = new JButton();
@@ -16,11 +17,11 @@ public class App {
     private final JButton createBusWithGarmoshkaButton = new JButton("Create BusWithGarmoshka");
     private ITransport transport;
     private int numType = 1;
+    private final BusPanel panel = new BusPanel();
 
-    /**
-     * Launch the application.
-     */
-    App() {
+
+    FormBus(JFrame parent) {
+        this.parent = parent;
         initialize();
     }
 
@@ -31,7 +32,6 @@ public class App {
         frame.setBounds(100, 100, 1000, 1000);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
-        BusPanel panel = new BusPanel();
         panel.setBorder(new BevelBorder(BevelBorder.LOWERED,
                 null, null, null, null));
         panel.setBounds(10, 11, width, height);
@@ -118,22 +118,24 @@ public class App {
         JButton standardDoors = new JButton("Standard Doors");
         standardDoors.setBounds(310, height + 100, 200, 50);
         frame.getContentPane().add(standardDoors);
-        standardDoors.addActionListener(e -> {
-            numType = 1;
-        });
+        standardDoors.addActionListener(e -> numType = 1);
 
         JButton ovalDoors = new JButton("Oval Doors");
         ovalDoors.setBounds(370, height + 160, 200, 50);
         frame.getContentPane().add(ovalDoors);
-        ovalDoors.addActionListener(e -> {
-            numType = 2;
-        });
+        ovalDoors.addActionListener(e -> numType = 2);
 
         JButton doubleOvalDoors = new JButton("DoubleOval Doors");
         doubleOvalDoors.setBounds(430, height + 220, 200, 50);
         frame.getContentPane().add(doubleOvalDoors);
-        doubleOvalDoors.addActionListener(e -> {
-            numType = 3;
+        doubleOvalDoors.addActionListener(e -> numType = 3);
+
+        JButton backButton = new JButton("Back");
+        backButton.setBounds(610, height + 45, 100, 50);
+        frame.getContentPane().add(backButton);
+        backButton.addActionListener(e -> {
+            frame.setVisible(false);
+            parent.setVisible(true);
         });
 
     }
@@ -148,5 +150,11 @@ public class App {
 
         button.setBounds(x, y, 50, 50);
         frame.getContentPane().add(button);
+    }
+
+    public void setTransport(ITransport transport) {
+        this.transport = transport;
+        panel.setTransport(transport);
+        panel.repaint();
     }
 }
