@@ -7,7 +7,7 @@ public class Main {
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
             try {
-                App window = new App();
+                FormStation window = new FormStation();
                 window.frame.setVisible(true);
             } catch (Exception e) {
                 e.printStackTrace();
