@@ -2,19 +2,17 @@ package com.nodj;
 
 import java.awt.*;
 
-public class Bus extends Vehicle{
+public class Bus extends Vehicle {
     protected int busWidth = 150;
     protected int busHeight = 60;
 
-    public Bus(int maxSpeed, float weight, Color mainColor)
-    {
+    public Bus(int maxSpeed, float weight, Color mainColor) {
         this.maxSpeed = maxSpeed;
         this.weight = weight;
         this.mainColor = mainColor;
     }
 
-    protected Bus(int maxSpeed, float weight, Color mainColor, int busWidth, int busHeight)
-    {
+    protected Bus(int maxSpeed, float weight, Color mainColor, int busWidth, int busHeight) {
         this.maxSpeed = maxSpeed;
         this.weight = weight;
         this.mainColor = mainColor;
@@ -23,8 +21,7 @@ public class Bus extends Vehicle{
     }
 
     @Override
-    public void moveTransport(Direction direction)
-    {
+    public void moveTransport(Direction direction) {
         float step = maxSpeed * 100 / weight;
         switch (direction) {
             // вправо
@@ -55,15 +52,14 @@ public class Bus extends Vehicle{
     }
 
     @Override
-    public void drawTransport(Graphics g)
-    {
-            g.setColor(mainColor); // cusov
-            g.fillRect(_startPosX, _startPosY, 150, 50);
-            g.setColor(Color.yellow); // door
-            g.fillRect(_startPosX, _startPosY + 5, 10, 25);
-            g.fillRect(_startPosX, _startPosY + 40, 5, 5);
-            g.setColor(Color.BLACK); // wheels
-            g.fillOval(_startPosX + 5, _startPosY + 40, 20, 20);
-            g.fillOval(_startPosX + 120, _startPosY + 40, 20, 20);
+    public void drawTransport(Graphics g) {
+        g.setColor(mainColor); // cusov
+        g.fillRect(_startPosX, _startPosY, 150, 50);
+        g.setColor(Color.yellow); // door
+        g.fillRect(_startPosX, _startPosY + 5, 10, 25);
+        g.fillRect(_startPosX, _startPosY + 40, 5, 5);
+        g.setColor(Color.BLACK); // wheels
+        g.fillOval(_startPosX + 5, _startPosY + 40, 20, 20);
+        g.fillOval(_startPosX + 120, _startPosY + 40, 20, 20);
     }
 }
