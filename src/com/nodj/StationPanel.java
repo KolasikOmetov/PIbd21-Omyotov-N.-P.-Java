@@ -4,15 +4,17 @@ import javax.swing.*;
 import java.awt.*;
 
 public class StationPanel extends JPanel {
-    private final Station<ITransport, IDrawingDoors> station;
-
-    StationPanel(Station<ITransport, IDrawingDoors> station){
-        this.station = station;
-    }
+    private Station<Vehicle, IDrawingDoors> station;
 
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        station.Draw(g);
+        if (station != null)
+            station.Draw(g);
     }
+
+    public void setStation(Station<Vehicle, IDrawingDoors> station) {
+        this.station = station;
+    }
+
 }
