@@ -4,17 +4,16 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class Station<T extends ITransport, D extends IDrawingDoors> {
-    private ArrayList<T> places;
-    private int _maxCount;
-    private int pictureWidth;
-    private int pictureHeight;
-    private int rows;
-    private int _placeSizeWidth = 350;
-    private int _placeSizeHeight = 80;
+    private final ArrayList<T> places;
+    private final int _maxCount;
+    private final int pictureWidth;
+    private final int pictureHeight;
+    private final int _placeSizeWidth = 350;
+    private final int _placeSizeHeight = 80;
 
     public Station(int picWidth, int picHeight) {
         int columns = picWidth / _placeSizeWidth;
-        rows = picHeight / _placeSizeHeight;
+        int rows = picHeight / _placeSizeHeight;
         _maxCount = columns * rows;
         places = new ArrayList<>();
         pictureWidth = picWidth;

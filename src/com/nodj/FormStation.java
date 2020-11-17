@@ -8,12 +8,10 @@ import java.util.LinkedList;
 public class FormStation {
     public JFrame frame;
     private StationCollection stationCollection;
-    private final JButton parkBusButton = new JButton("Припарковать автобус");
-    private final JButton parkBusWithGarmoshkaButton = new JButton("Припарковать автобус с гармошкой");
     private JList<String> listOfStations;
+    private final StationPanel panel = new StationPanel();
     private final DefaultListModel<String> listStationModel = new DefaultListModel<>();
-    private final int numType = 0;
-    private LinkedList<Vehicle> leavingBuses = new LinkedList<>();
+    private final LinkedList<Vehicle> leavingBuses = new LinkedList<>();
 
     /**
      * Launch the application.
@@ -31,7 +29,6 @@ public class FormStation {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
         frame.setTitle("Автовокзал");
-        StationPanel panel = new StationPanel();
         panel.setBounds(10, 11, width, height);
         panel.setBorder(new BevelBorder(BevelBorder.LOWERED,
                 null, null, null, null));
@@ -109,41 +106,19 @@ public class FormStation {
         showLastLeavingBusButton.setBounds(width + 340, 190, 200, 20);
         frame.add(showLastLeavingBusButton);
 
-        parkBusButton.addActionListener(e -> {
-            if (listOfStations.getSelectedIndex() > -1) {
-                Color mainColor = JColorChooser.showDialog(frame, "Выберите цвет автобуса", Color.BLUE);
-                if (mainColor != null) {
-                    Vehicle bus = new Bus(100, 1000, mainColor);
-                    if (stationCollection.get(listStationModel.get(listOfStations.getSelectedIndex())).add(bus)) {
-                        panel.repaint();
-                    } else {
-                        JOptionPane.showMessageDialog(frame, "Автовокзал переполнен", "Сообщение", JOptionPane.INFORMATION_MESSAGE);
-                    }
-                }
-                panel.repaint();
+        JButton addBusButton = new JButton("Добавить автобус");
+        addBusButton.addActionListener(e -> EventQueue.invokeLater(() -> {
+            try {
+                FormBusConfig window = new FormBusConfig(frame);
+                window.addEvent(this::addBus);
+                window.frame.setVisible(true);
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
-        });
-        parkBusButton.setBounds(width + 20, 20, 200, 50);
-        frame.getContentPane().add(parkBusButton);
-        parkBusWithGarmoshkaButton.addActionListener(e -> {
-            if (listOfStations.getSelectedIndex() > -1) {
-                Color mainColor = JColorChooser.showDialog(frame, "Выберите цвет автобуса", Color.BLUE);
-                if (mainColor != null) {
-                    Color dopColor = JColorChooser.showDialog(frame, "Выберите цвет дополнительный автобуса", Color.BLUE);
-                    if (dopColor != null) {
-                        Vehicle bus = new BusWithGarmoshka(100, 1000, mainColor, dopColor, 320, 60, true, true, 3, numType);
-                        if (stationCollection.get(listStationModel.get(listOfStations.getSelectedIndex())).add(bus)) {
-                            panel.repaint();
-                        } else {
-                            JOptionPane.showMessageDialog(frame, "Автовокзал переполнен", "Сообщение", JOptionPane.INFORMATION_MESSAGE);
-                        }
-                    }
-                }
-                panel.repaint();
-            }
-        });
-        parkBusWithGarmoshkaButton.setBounds(width + 20, 80, 200, 50);
-        frame.getContentPane().add(parkBusWithGarmoshkaButton);
+        }));
+        addBusButton.setBounds(width + 20, 20, 200, 50);
+        frame.getContentPane().add(addBusButton);
+
         JPanel groupPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         groupPanel.setBorder(BorderFactory.createTitledBorder("Забрать машину"));
         groupPanel.setBounds(width + 20, 200, 200, 100);
@@ -237,6 +212,16 @@ public class FormStation {
             listOfStations.setSelectedIndex(0);
         } else if (listStationModel.size() > 0 && index > -1 && index < listStationModel.size()) {
             listOfStations.setSelectedIndex(index);
+        }
+    }
+
+    private void addBus(Vehicle bus) {
+        if (bus != null && listOfStations.getSelectedIndex() > -1) {
+            if (stationCollection.get(listStationModel.get(listOfStations.getSelectedIndex())).add(bus)) {
+                panel.repaint();
+            } else {
+                JOptionPane.showMessageDialog(frame, "Машину не удалось поставить");
+            }
         }
     }
 }

@@ -49,7 +49,7 @@ public class FormBus {
         createBusButton.setBounds(200, height + 45, 100, 50);
         frame.getContentPane().add(createBusButton);
         createBusWithGarmoshkaButton.addActionListener(e -> {
-            transport = new BusWithGarmoshka(100, 1000, Color.BLUE, Color.green, 320, 60, true, true, 3, numType);
+            transport = new BusWithGarmoshka(100, 1000, Color.BLUE, Color.green, true, true, 3, numType);
             transport.setPosition(10, 10, width, height);
             panel.setTransport(transport);
             panel.repaint();
