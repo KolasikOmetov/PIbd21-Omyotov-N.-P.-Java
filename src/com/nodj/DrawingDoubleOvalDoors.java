@@ -2,7 +2,7 @@ package com.nodj;
 
 import java.awt.*;
 
-public class DrawingDoubleOvalDoors implements IDrawingDoors{
+public class DrawingDoubleOvalDoors implements IDrawingDoors {
     private Doors numDoors = Doors.Three;
 
     @Override

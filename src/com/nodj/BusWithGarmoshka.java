@@ -3,7 +3,6 @@ package com.nodj;
 import java.awt.*;
 
 public class BusWithGarmoshka extends Bus {
-
     private Color dopColor;
     private boolean backDoors;
     private boolean garmoshka;
@@ -13,13 +12,11 @@ public class BusWithGarmoshka extends Bus {
                      float weight,
                      Color mainColor,
                      Color dopColor,
-                     int busWidth,
-                     int busHeight,
                      boolean backDoors,
                      boolean garmoshka,
                      int numDoors,
                      int numType) {
-        super(maxSpeed, weight, mainColor, busWidth, busHeight);
+        super(maxSpeed, weight, mainColor);
         this.dopColor = dopColor;
         this.backDoors = backDoors;
         this.garmoshka = garmoshka;
@@ -54,5 +51,13 @@ public class BusWithGarmoshka extends Bus {
             g.fillOval(_startPosX + 290, _startPosY + 40, 20, 20);
         }
         drawingDoors.drawDoors(g, dopColor, _startPosX, _startPosY, backDoors, garmoshka);
+    }
+
+    public void setDopColor(Color dopColor) {
+        this.dopColor = dopColor;
+    }
+
+    public void setDrawingDoors(IDrawingDoors drawingDoors) {
+        this.drawingDoors = drawingDoors;
     }
 }
