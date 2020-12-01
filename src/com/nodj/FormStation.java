@@ -3,6 +3,7 @@ package com.nodj;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import java.awt.*;
+import java.io.File;
 import java.util.LinkedList;
 
 public class FormStation {
@@ -29,6 +30,11 @@ public class FormStation {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
         frame.setTitle("Автовокзал");
+
+        JMenuBar menuBar = new JMenuBar();
+        menuBar.add(createFileMenu());
+        frame.setJMenuBar(menuBar);
+
         panel.setBounds(10, 11, width, height);
         panel.setBorder(new BevelBorder(BevelBorder.LOWERED,
                 null, null, null, null));
@@ -50,7 +56,7 @@ public class FormStation {
                 return;
             }
             stationCollection.addStation(addNewStationTextField.getText());
-            ReloadLevels();
+            reloadAllLevels();
         });
         addStationButton.setBounds(width + 340, 60, 200, 20);
         frame.add(addStationButton);
@@ -75,7 +81,7 @@ public class FormStation {
                 if (JOptionPane.showConfirmDialog(frame, "Удалить автовокзал " + listStationModel.get(listOfStations.getSelectedIndex()) + "?", "Удаление", JOptionPane.OK_CANCEL_OPTION)
                         == JOptionPane.OK_OPTION) {
                     stationCollection.delStation(listStationModel.get(listOfStations.getSelectedIndex()));
-                    ReloadLevels();
+                    reloadAllLevels();
                 }
             }
         });
@@ -199,7 +205,7 @@ public class FormStation {
         groupPanelGuess.add(guessFreeButton);
     }
 
-    private void ReloadLevels() {
+    private void reloadAllLevels() {
         int index = listOfStations.getSelectedIndex();
 
         listOfStations.setSelectedIndex(-1);
@@ -223,5 +229,102 @@ public class FormStation {
                 JOptionPane.showMessageDialog(frame, "Машину не удалось поставить");
             }
         }
+    }
+
+    private JMenu createFileMenu() {
+        JMenu file = new JMenu("Файл");
+        JMenuItem save = new JMenuItem("Сохранить");
+        file.add(save);
+        JMenuItem saveAll = new JMenuItem("Сохранить всё");
+        file.add(saveAll);
+        JMenuItem load = new JMenuItem("Загрузить");
+        file.add(load);
+        JMenuItem loadAll = new JMenuItem("Загрузить всё");
+        file.add(loadAll);
+
+        saveAll.addActionListener(e ->
+        {
+            String filename = fileDialogSetup(FileDialog.SAVE);
+            if (filename == null) {
+                return;
+            }
+            if (stationCollection.SaveAllData(filename)) {
+                JOptionPane.showMessageDialog(frame, "Сохранение прошло успешно", "Инфо", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(frame, "При сохранении произошла какая-то ошибка", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+        save.addActionListener(e ->
+        {
+            String filename = fileDialogSetup(FileDialog.SAVE);
+            if (filename == null) {
+                return;
+            }
+            if (listOfStations.getSelectedIndex() == -1) {
+                JOptionPane.showMessageDialog(frame, "Вы не указали автовокзал", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (stationCollection.SaveData(filename, listStationModel.get(listOfStations.getSelectedIndex()))) {
+                JOptionPane.showMessageDialog(frame, "Сохранение прошло успешно", "Инфо", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(frame, "При сохранении произошла какая-то ошибка", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+        loadAll.addActionListener(e ->
+        {
+            String filename = fileDialogSetup(FileDialog.LOAD);
+            if (filename == null) {
+                return;
+            }
+            if (stationCollection.LoadAllData(filename)) {
+                JOptionPane.showMessageDialog(frame, "Загрузка прошла успешно", "Инфо", JOptionPane.INFORMATION_MESSAGE);
+                reloadAllLevels();
+                if (listStationModel.size() > 0) {
+                    panel.setStation(stationCollection.get(listStationModel.get(0)));
+                    panel.repaint();
+                }
+            } else {
+                JOptionPane.showMessageDialog(frame, "При загрузке произошла какая-то ошибка", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+        load.addActionListener(e ->
+        {
+            String filename = fileDialogSetup(FileDialog.LOAD);
+            if (filename == null) {
+                return;
+            }
+            if (stationCollection.LoadData(filename)) {
+                JOptionPane.showMessageDialog(frame, "Загрузка прошла успешно", "Инфо", JOptionPane.INFORMATION_MESSAGE);
+                listStationModel.clear();
+                for (String key : stationCollection.keys()) {
+                    listStationModel.addElement(key);
+                }
+                if (listStationModel.size() > 0) {
+                    panel.setStation(stationCollection.get(listStationModel.get(0)));
+                    panel.repaint();
+                }
+                panel.repaint();
+            } else {
+                JOptionPane.showMessageDialog(frame, "При загрузке произошла какая-то ошибка", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+        return file;
+    }
+
+    private String fileDialogSetup(int type) {
+        File filename;
+        JFileChooser chooser = new JFileChooser();
+        chooser.addChoosableFileFilter(new OpenFileFilter(".txt"));
+        int returnVal;
+        if (type == 0) {
+            returnVal = chooser.showOpenDialog(frame);
+        } else {
+            returnVal = chooser.showSaveDialog(frame);
+        }
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            filename = chooser.getSelectedFile();
+            return filename.getAbsolutePath();
+        }
+        return null;
     }
 }
