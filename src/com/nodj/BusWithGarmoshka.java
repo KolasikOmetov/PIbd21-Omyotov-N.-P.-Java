@@ -3,10 +3,14 @@ package com.nodj;
 import java.awt.*;
 
 public class BusWithGarmoshka extends Bus {
+
     private Color dopColor;
     private boolean backDoors;
     private boolean garmoshka;
     private IDrawingDoors drawingDoors;
+    private int numDoors;
+    private int numType;
+    static private final String separator = ";";
 
     BusWithGarmoshka(int maxSpeed,
                      float weight,
@@ -20,8 +24,25 @@ public class BusWithGarmoshka extends Bus {
         this.dopColor = dopColor;
         this.backDoors = backDoors;
         this.garmoshka = garmoshka;
-        this.drawingDoors = setDrawingDoors(numType);
+        this.numDoors = numDoors;
+        this.numType = numType;
+        drawingDoors = setDrawingDoors(numType);
         drawingDoors.setConfig(numDoors);
+    }
+
+    public BusWithGarmoshka(String info) {
+        super(Integer.parseInt(info.split(separator)[0]), Float.parseFloat(info.split(separator)[1]), Color.decode(info.split(separator)[2]));
+
+        String[] strs = info.split(separator);
+        if (strs.length == 8) {
+            dopColor = Color.decode(strs[3]);
+            backDoors = Boolean.parseBoolean(strs[4]);
+            garmoshka = Boolean.parseBoolean(strs[5]);
+            numDoors = Integer.parseInt(strs[6]);
+            numType = Integer.parseInt(strs[7]);
+            drawingDoors = setDrawingDoors(numType);
+            drawingDoors.setConfig(numDoors);
+        }
     }
 
     private IDrawingDoors setDrawingDoors(int numType) {
@@ -59,5 +80,15 @@ public class BusWithGarmoshka extends Bus {
 
     public void setDrawingDoors(IDrawingDoors drawingDoors) {
         this.drawingDoors = drawingDoors;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + separator
+                + dopColor.getRGB() + separator
+                + backDoors + separator
+                + garmoshka + separator
+                + numDoors + separator
+                + numType;
     }
 }

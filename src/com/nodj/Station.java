@@ -74,4 +74,15 @@ public class Station<T extends ITransport, D extends IDrawingDoors> {
             g2.drawLine(i * _placeSizeWidth, 0, i * _placeSizeWidth, (pictureHeight / _placeSizeHeight) * _placeSizeHeight);
         }
     }
+
+    public T getNext(int index) {
+        if (index < 0 || index >= places.size()) {
+            return null;
+        }
+        return places.get(index);
+    }
+
+    void clear() {
+        places.clear();
+    }
 }
