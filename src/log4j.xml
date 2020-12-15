@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration>
+
+    <appender name="file" class="org.apache.log4j.RollingFileAppender">
+        <param name="append" value="true"/>
+        <param name="maxFileSize" value="10KB"/>
+        <param name="maxBackupIndex" value="5"/>
+        <param name="file"
+               value="logger.log"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern"
+                   value="%-5p %m (дата - %d{dd-MM-yyyy})%n"/>
+        </layout>
+    </appender>
+
+    <appender name="mailAppender" class="org.apache.log4j.net.SMTPAppender">
+        <param name="BufferSize" value="1" />
+        <param name="SMTPHost" value="smtp.gmail.com"/>
+        <param name="SMTPPort" value="465"/>
+        <param name="SMTPUsername" value=""/>
+        <param name="SMTPPassword" value=""/>
+        <param name="From" value=""/>
+        <param name="To" value=""/>
+        <param name="Subject" value="Testing Log4j mail notification"/>
+        <param name="SMTPDebug" value="true" />
+        <param name="SMTPProtocol" value="smtps" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%-5p %m (дата - %d{dd-MM-yyyy})%n"/>
+        </layout>
+    </appender>
+
+    <logger name="com.nodj">
+        <level value="ERROR"/>
+        <appender-ref ref="mailAppender"/>
+    </logger>
+
+    <root>
+        <priority value="DEBUG"/>
+        <appender-ref ref="file"/>
+    </root>
+</log4j:configuration>
