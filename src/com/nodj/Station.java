@@ -20,17 +20,17 @@ public class Station<T extends ITransport, D extends IDrawingDoors> {
         pictureHeight = picHeight;
     }
 
-    public boolean add(T bus) { // +
+    public boolean add(T bus) throws StationOverflowException{ // +
         if (places.size() >= _maxCount) {
-            return false;
+            throw new StationOverflowException();
         }
         places.add(bus);
         return true;
     }
 
-    public T remove(int index) { // -
-        if (index < -1 || index >= places.size()) {
-            return null;
+    public T remove(int index) throws StationNotFoundException{ // -
+        if (index < 0 || index >= places.size()) {
+            throw new StationNotFoundException(index);
         }
 
         T bus = places.get(index);

@@ -1,12 +1,22 @@
 package com.nodj;
 
+import org.slf4j.Logger;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
+
+import javax.management.OperationsException;
+import javax.naming.NameNotFoundException;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.io.File;
 import java.util.LinkedList;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 public class FormStation {
+    private static final Logger logger = getLogger(FormStation.class);
+    private final Marker fatal = MarkerFactory.getMarker("FATAL");
     public JFrame frame;
     private StationCollection stationCollection;
     private JList<String> listOfStations;
@@ -146,11 +156,15 @@ public class FormStation {
                         return;
                     }
 
-                    Vehicle bus = stationCollection.get(listStationModel.get(listOfStations.getSelectedIndex())).remove(numPlace);
-                    if (bus != null) {
-                        leavingBuses.add(bus);
+                    try {
+                        Vehicle bus = stationCollection.get(listStationModel.get(listOfStations.getSelectedIndex())).remove(numPlace);
+                        if (bus != null) {
+                            leavingBuses.add(bus);
+                        }
+                        panel.repaint();
+                    } catch (StationNotFoundException ex) {
+                        JOptionPane.showMessageDialog(frame, ex.toString(), "Ошибка", JOptionPane.ERROR_MESSAGE);
                     }
-                    panel.repaint();
                 }
             }
         });
@@ -223,10 +237,13 @@ public class FormStation {
 
     private void addBus(Vehicle bus) {
         if (bus != null && listOfStations.getSelectedIndex() > -1) {
-            if (stationCollection.get(listStationModel.get(listOfStations.getSelectedIndex())).add(bus)) {
-                panel.repaint();
-            } else {
-                JOptionPane.showMessageDialog(frame, "Машину не удалось поставить");
+            try {
+                if (stationCollection.get(listStationModel.get(listOfStations.getSelectedIndex())).add(bus)) {
+                    panel.repaint();
+                }
+            } catch (StationOverflowException ex) {
+                JOptionPane.showMessageDialog(frame, "Переполнение");
+                logger.warn(ex.getMessage());
             }
         }
     }
@@ -248,9 +265,14 @@ public class FormStation {
             if (filename == null) {
                 return;
             }
-            if (stationCollection.SaveAllData(filename)) {
+            try {
+                stationCollection.SaveAllData(filename);
                 JOptionPane.showMessageDialog(frame, "Сохранение прошло успешно", "Инфо", JOptionPane.INFORMATION_MESSAGE);
-            } else {
+            } catch (NameNotFoundException | OperationsException ex) {
+                logger.warn(ex.toString());
+                JOptionPane.showMessageDialog(frame, "При сохранении произошла какая-то ошибка", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ex) {
+                logger.error(fatal, ex.toString());
                 JOptionPane.showMessageDialog(frame, "При сохранении произошла какая-то ошибка", "Ошибка", JOptionPane.ERROR_MESSAGE);
             }
         });
@@ -264,9 +286,14 @@ public class FormStation {
                 JOptionPane.showMessageDialog(frame, "Вы не указали автовокзал", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            if (stationCollection.SaveData(filename, listStationModel.get(listOfStations.getSelectedIndex()))) {
+            try {
+                stationCollection.SaveData(filename, listStationModel.get(listOfStations.getSelectedIndex()));
                 JOptionPane.showMessageDialog(frame, "Сохранение прошло успешно", "Инфо", JOptionPane.INFORMATION_MESSAGE);
-            } else {
+            } catch (NameNotFoundException | OperationsException ex) {
+                logger.warn(ex.toString());
+                JOptionPane.showMessageDialog(frame, "При сохранении произошла какая-то ошибка", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ex) {
+                logger.error(fatal, ex.toString());
                 JOptionPane.showMessageDialog(frame, "При сохранении произошла какая-то ошибка", "Ошибка", JOptionPane.ERROR_MESSAGE);
             }
         });
@@ -276,14 +303,22 @@ public class FormStation {
             if (filename == null) {
                 return;
             }
-            if (stationCollection.LoadAllData(filename)) {
+            try {
+                stationCollection.LoadAllData(filename);
                 JOptionPane.showMessageDialog(frame, "Загрузка прошла успешно", "Инфо", JOptionPane.INFORMATION_MESSAGE);
                 reloadAllLevels();
                 if (listStationModel.size() > 0) {
                     panel.setStation(stationCollection.get(listStationModel.get(0)));
                     panel.repaint();
                 }
-            } else {
+            } catch (StationOverflowException ex) {
+                JOptionPane.showMessageDialog(frame, "Переполнение");
+                logger.warn(ex.getMessage());
+            } catch (OperationsException | IllegalArgumentException ex) {
+                logger.warn(ex.toString());
+                JOptionPane.showMessageDialog(frame, "При загрузке произошла какая-то ошибка", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ex) {
+                logger.error(fatal, ex.toString());
                 JOptionPane.showMessageDialog(frame, "При загрузке произошла какая-то ошибка", "Ошибка", JOptionPane.ERROR_MESSAGE);
             }
         });
@@ -293,7 +328,8 @@ public class FormStation {
             if (filename == null) {
                 return;
             }
-            if (stationCollection.LoadData(filename)) {
+            try {
+                stationCollection.LoadData(filename);
                 JOptionPane.showMessageDialog(frame, "Загрузка прошла успешно", "Инфо", JOptionPane.INFORMATION_MESSAGE);
                 listStationModel.clear();
                 for (String key : stationCollection.keys()) {
@@ -304,7 +340,14 @@ public class FormStation {
                     panel.repaint();
                 }
                 panel.repaint();
-            } else {
+            } catch (StationOverflowException ex) {
+                JOptionPane.showMessageDialog(frame, "Переполнение");
+                logger.warn(ex.getMessage());
+            } catch (OperationsException | IllegalArgumentException ex) {
+                logger.warn(ex.toString());
+                JOptionPane.showMessageDialog(frame, "При загрузке произошла какая-то ошибка", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ex) {
+                logger.error(fatal, ex.toString());
                 JOptionPane.showMessageDialog(frame, "При загрузке произошла какая-то ошибка", "Ошибка", JOptionPane.ERROR_MESSAGE);
             }
         });
