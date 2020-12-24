@@ -122,6 +122,17 @@ public class FormStation {
         showLastLeavingBusButton.setBounds(width + 340, 190, 200, 20);
         frame.add(showLastLeavingBusButton);
 
+        JButton sortButton = new JButton("Сортировать");
+        sortButton.addActionListener(e -> EventQueue.invokeLater(() -> {
+            if (listOfStations.getSelectedIndex() > -1)
+            {
+                stationCollection.get(listStationModel.get(listOfStations.getSelectedIndex())).sort();
+                panel.repaint();
+            }
+        }));
+        sortButton.setBounds(width + 20, 80, 200, 50);
+        frame.getContentPane().add(sortButton);
+
         JButton addBusButton = new JButton("Добавить автобус");
         addBusButton.addActionListener(e -> EventQueue.invokeLater(() -> {
             try {
@@ -241,8 +252,8 @@ public class FormStation {
                 if (stationCollection.get(listStationModel.get(listOfStations.getSelectedIndex())).add(bus)) {
                     panel.repaint();
                 }
-            } catch (StationOverflowException ex) {
-                JOptionPane.showMessageDialog(frame, "Переполнение");
+            } catch (StationOverflowException | StationAlreadyHaveException ex) {
+                JOptionPane.showMessageDialog(frame, ex.getMessage());
                 logger.warn(ex.getMessage());
             }
         }
@@ -268,7 +279,7 @@ public class FormStation {
             try {
                 stationCollection.SaveAllData(filename);
                 JOptionPane.showMessageDialog(frame, "Сохранение прошло успешно", "Инфо", JOptionPane.INFORMATION_MESSAGE);
-            } catch (NameNotFoundException | OperationsException ex) {
+            } catch (OperationsException ex) {
                 logger.warn(ex.toString());
                 JOptionPane.showMessageDialog(frame, "При сохранении произошла какая-то ошибка", "Ошибка", JOptionPane.ERROR_MESSAGE);
             } catch (Exception ex) {
