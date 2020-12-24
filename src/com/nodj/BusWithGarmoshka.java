@@ -2,11 +2,11 @@ package com.nodj;
 
 import java.awt.*;
 
-public class BusWithGarmoshka extends Bus {
+public class BusWithGarmoshka extends Bus implements Comparable<BusWithGarmoshka>{
 
-    private Color dopColor;
-    private boolean backDoors;
-    private boolean garmoshka;
+    protected Color dopColor;
+    protected boolean backDoors;
+    protected boolean garmoshka;
     private IDrawingDoors drawingDoors;
     private int numDoors;
     private int numType;
@@ -42,6 +42,13 @@ public class BusWithGarmoshka extends Bus {
             numType = Integer.parseInt(strs[7]);
             drawingDoors = setDrawingDoors(numType);
             drawingDoors.setConfig(numDoors);
+
+            props.add(dopColor);
+            props.add(backDoors);
+            props.add(garmoshka);
+            props.add(numDoors);
+            props.add(numType);
+            props.add(drawingDoors.getClass().getName());
         }
     }
 
@@ -90,5 +97,76 @@ public class BusWithGarmoshka extends Bus {
                 + garmoshka + separator
                 + numDoors + separator
                 + numType;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj.getClass() == BusWithGarmoshka.class)) {
+            return false;
+        } else {
+            return equals((BusWithGarmoshka) obj);
+        }
+    }
+
+    public boolean equals(BusWithGarmoshka other) {
+        if (other == null) {
+            return false;
+        }
+        if (other.getClass() != BusWithGarmoshka.class) {
+            return false;
+        }
+        if (maxSpeed != other.maxSpeed) {
+            return false;
+        }
+        if (weight != other.weight) {
+            return false;
+        }
+        if (mainColor.getRGB() != other.mainColor.getRGB()) {
+            return false;
+        }
+        if (dopColor.getRGB() != other.dopColor.getRGB()) {
+            return false;
+        }
+        if (backDoors != other.backDoors) {
+            return false;
+        }
+        if (garmoshka != other.garmoshka) {
+            return false;
+        }
+        if (numDoors != other.numDoors) {
+            return false;
+        }
+        return drawingDoors.getClass() == other.drawingDoors.getClass();
+    }
+
+    public int compareTo(BusWithGarmoshka other) {
+        if (maxSpeed != other.maxSpeed)
+        {
+            return Integer.compare(maxSpeed, other.maxSpeed);
+        }
+        if (weight != other.weight)
+        {
+            return Float.compare(weight, other.weight);
+        }
+        if (mainColor.getRGB() != other.mainColor.getRGB())
+        {
+            return Integer.compare(mainColor.getRGB(), other.mainColor.getRGB());
+        }
+        if (dopColor.getRGB() != other.dopColor.getRGB())
+        {
+            return Integer.compare(dopColor.getRGB(), other.dopColor.getRGB());
+        }
+        if (backDoors != other.backDoors)
+        {
+            return Boolean.compare(backDoors, other.backDoors);
+        }
+        if (garmoshka != other.garmoshka)
+        {
+            return Boolean.compare(garmoshka, other.garmoshka);
+        }
+        return 0;
     }
 }

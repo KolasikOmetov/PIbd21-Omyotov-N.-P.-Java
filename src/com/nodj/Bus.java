@@ -1,16 +1,23 @@
 package com.nodj;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 
-public class Bus extends Vehicle {
+public class Bus extends Vehicle implements Comparable<Bus>{
     protected int busWidth = 150;
     protected int busHeight = 60;
     protected String separator = ";";
+    protected ArrayList<Object> props = new ArrayList<>();
 
     public Bus(int maxSpeed, float weight, Color mainColor) {
         this.maxSpeed = maxSpeed;
         this.weight = weight;
         this.mainColor = mainColor;
+
+        props.add(maxSpeed);
+        props.add(weight);
+        props.add(mainColor);
     }
 
     public Bus(String info) {
@@ -19,6 +26,10 @@ public class Bus extends Vehicle {
             maxSpeed = Integer.parseInt(strs[0]);
             weight = Float.parseFloat(strs[1]);
             mainColor = Color.decode(strs[2]);
+
+            props.add(maxSpeed);
+            props.add(weight);
+            props.add(mainColor);
         }
     }
 
@@ -28,6 +39,10 @@ public class Bus extends Vehicle {
         this.mainColor = mainColor;
         this.busWidth = busWidth;
         this.busHeight = busHeight;
+
+        props.add(maxSpeed);
+        props.add(weight);
+        props.add(mainColor);
     }
 
     @Override
@@ -78,5 +93,50 @@ public class Bus extends Vehicle {
         return maxSpeed + separator
                 + weight + separator
                 + mainColor.getRGB();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj.getClass() == Bus.class)) {
+            return false;
+        } else {
+            return equals((Bus) obj);
+        }
+    }
+
+    public boolean equals(Bus other) {
+        if (other == null) {
+            return false;
+        }
+        if (other.getClass() != Bus.class) {
+            return false;
+        }
+        if (maxSpeed != other.maxSpeed) {
+            return false;
+        }
+        if (weight != other.weight) {
+            return false;
+        }
+        return mainColor.getRGB() == other.mainColor.getRGB();
+    }
+
+    @Override
+    public int compareTo(Bus other) {
+        if (maxSpeed != other.maxSpeed)
+        {
+            return Integer.compare(maxSpeed, other.maxSpeed);
+        }
+        if (weight != other.weight)
+        {
+            return Float.compare(weight, other.weight);
+        }
+        if (mainColor.getRGB() != other.mainColor.getRGB())
+        {
+            return Integer.compare(mainColor.getRGB(), other.mainColor.getRGB());
+        }
+        return 0;
     }
 }

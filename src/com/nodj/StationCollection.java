@@ -5,7 +5,7 @@ import javax.naming.NameNotFoundException;
 import java.io.*;
 import java.util.HashMap;
 
-public class StationCollection {
+public class StationCollection{
     private final HashMap<String, Station<Vehicle, IDrawingDoors>> stationStages;
 
     public String[] keys() {
@@ -66,22 +66,26 @@ public class StationCollection {
         BufferedWriter bw = new BufferedWriter(new FileWriter(dataFile));
         bw.write("Station" + separator + selectedName);
         bw.newLine();
-        ITransport bus;
-        for (int i = 0; (bus = stationStages.get(selectedName).getNext(i)) != null; i++) {
-            if (bus.getClass() == Bus.class) {
-                bw.write("Bus" + separator);
+        stationStages.get(selectedName).forEach((bus) -> {
+            try {
+                if (bus.getClass() == Bus.class) {
+                    bw.write("Bus" + separator);
+                }
+                if (bus.getClass() == BusWithGarmoshka.class) {
+                    bw.write("BusWithGarmoshka" + separator);
+                }
+                //Записываемые параметры
+                bw.write(bus.toString());
+                bw.newLine();
             }
-            if (bus.getClass() == BusWithGarmoshka.class) {
-                bw.write("BusWithGarmoshka" + separator);
+            catch (IOException e){
+                e.printStackTrace();
             }
-            //Записываемые параметры
-            bw.write(bus.toString());
-            bw.newLine();
-        }
+        });
         bw.close();
     }
 
-    public void SaveAllData(String filename) throws NameNotFoundException, OperationsException, IOException{
+    public void SaveAllData(String filename) throws OperationsException, IOException{
         File dataFile = new File(filename);
         if (dataFile.exists()) {
             if (!dataFile.delete())
@@ -97,18 +101,22 @@ public class StationCollection {
             try {
                 bw.write("Station" + separator + k);
                 bw.newLine();
-                ITransport bus;
-                for (int i = 0; (bus = v.getNext(i)) != null; i++) {
-                    if (bus.getClass() == Bus.class) {
-                        bw.write("Bus" + separator);
+                v.forEach((bus) -> {
+                    try {
+                        if (bus.getClass() == Bus.class) {
+                            bw.write("Bus" + separator);
+                        }
+                        if (bus.getClass() == BusWithGarmoshka.class) {
+                            bw.write("BusWithGarmoshka" + separator);
+                        }
+                        //Записываемые параметры
+                        bw.write(bus.toString());
+                        bw.newLine();
                     }
-                    if (bus.getClass() == BusWithGarmoshka.class) {
-                        bw.write("BusWithGarmoshka" + separator);
+                    catch (IOException e){
+                        e.printStackTrace();
                     }
-                    //Записываемые параметры
-                    bw.write(bus.toString());
-                    bw.newLine();
-                }
+                });
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -116,7 +124,7 @@ public class StationCollection {
         bw.close();
     }
 
-    public void LoadData(String filename) throws OperationsException, IOException, StationOverflowException{
+    public void LoadData(String filename) throws OperationsException, IOException, StationOverflowException, StationAlreadyHaveException{
         File dataFile = new File(filename);
         if (!dataFile.exists()) {
             throw new OperationsException();
@@ -161,7 +169,7 @@ public class StationCollection {
     }
 
 
-    public void LoadAllData(String filename)  throws OperationsException, IOException, StationOverflowException{
+    public void LoadAllData(String filename)  throws OperationsException, IOException, StationOverflowException, StationAlreadyHaveException{
         File dataFile = new File(filename);
         if (!dataFile.exists()) {
             throw new OperationsException();

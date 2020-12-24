@@ -2,14 +2,20 @@ package com.nodj;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
+import java.util.function.Consumer;
 
-public class Station<T extends ITransport, D extends IDrawingDoors> {
+public class Station<T extends ITransport, D extends IDrawingDoors> implements Iterable<Vehicle> {
     private final ArrayList<T> places;
     private final int _maxCount;
     private final int pictureWidth;
     private final int pictureHeight;
     private final int _placeSizeWidth = 350;
     private final int _placeSizeHeight = 80;
+
+    private int _currentIndex = -1;
 
     public Station(int picWidth, int picHeight) {
         int columns = picWidth / _placeSizeWidth;
@@ -20,15 +26,20 @@ public class Station<T extends ITransport, D extends IDrawingDoors> {
         pictureHeight = picHeight;
     }
 
-    public boolean add(T bus) throws StationOverflowException{ // +
+    public boolean add(T bus) throws StationOverflowException, StationAlreadyHaveException { // +
         if (places.size() >= _maxCount) {
             throw new StationOverflowException();
+        }
+        for (T curBus : places){
+            if(bus.equals(curBus)){
+                throw new StationAlreadyHaveException();
+            }
         }
         places.add(bus);
         return true;
     }
 
-    public T remove(int index) throws StationNotFoundException{ // -
+    public T remove(int index) throws StationNotFoundException { // -
         if (index < 0 || index >= places.size()) {
             throw new StationNotFoundException(index);
         }
@@ -85,4 +96,33 @@ public class Station<T extends ITransport, D extends IDrawingDoors> {
     void clear() {
         places.clear();
     }
+
+    public void sort() {
+        places.sort((Comparator<T>) new BusComparer());
+    }
+
+    public void reset() {
+        _currentIndex = -1;
+    }
+
+    @Override
+    public Iterator<Vehicle> iterator() {
+        return null;
+    }
+
+    @Override
+    public void forEach(Consumer<? super Vehicle> action) {
+        if (action == null)
+            throw new NullPointerException();
+        if (places.size() > 0) {
+            int mc = _currentIndex;
+            for (T e : places) {
+                action.accept((Vehicle) e);
+            }
+            if (_currentIndex != mc)
+                throw new ConcurrentModificationException();
+        }
+        reset();
+    }
+
 }
